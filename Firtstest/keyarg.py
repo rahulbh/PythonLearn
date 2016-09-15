@@ -1,9 +1,7 @@
-def get_sum(i,*arg):
-    sum=i
+def get_sum1(i,*arg):
+    sum1=i
     for item in arg:
-        sum+=item
-    return sum
+        sum1+=item
+    return sum1
 
-get_sum(1,input())
-        
-    
+print(get_sum1(1,12,3))
