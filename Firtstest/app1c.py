@@ -8,9 +8,9 @@ app.debug = True  # Enable reloader and debugger
 
 @app.route('/')
 def index():
-   """Return an HTML-formatted string and an optional response status code"""
-   return render_template('index.html')  # To be placed under sub-directory templates
+    """Return an HTML-formatted string and an optional response status code"""
+    return render_template('index.html')  # To be placed under sub-directory templates
 
 
 if __name__ == '__main__':  # Script executed directly?
-   app.run()  # Launch built-in web server and run this Flask webapp
+    app.run()  # Launch built-in web server and run this Flask webapp

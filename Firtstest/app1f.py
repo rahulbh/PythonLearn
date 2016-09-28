@@ -7,12 +7,12 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-   return redirect(url_for('start', username='Peter'))
-         # Also pass an optional URL variable
+    return redirect(url_for('start', username='Peter'))
+    # Also pass an optional URL variable
 
 @app.route('/go/<username>')
 def start(username):
-   return 'Hello, %s' % username
+    return 'Hello, %s' % username
 
 if __name__ == '__main__':
     app.run(debug=True)

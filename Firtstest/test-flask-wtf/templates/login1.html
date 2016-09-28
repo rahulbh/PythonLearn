@@ -1,0 +1,6 @@
+<form method="POST" action="/">
+  {{ form.hidden_tag() }}{# Renders ALL hidden fields, including the CSRF #}
+  {{ form.username.label }} {{ form.username(size=15) }}
+  {{ form.passwd.label }} {{ form.passwd(class='passwd') }}
+  <input type="submit" value="Go">
+</form>
