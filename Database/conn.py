@@ -29,7 +29,7 @@ conn.execute('''INSERT INTO cafe (category, name, price) VALUES
 
 # Query table
 for row in conn.execute('SELECT * FROM cafe'):
-   print(row)
+    print(row)
 
 # give connection back to the connection pool
 conn.close()
