@@ -19,7 +19,8 @@ def submit():
         if flag==0:
             return render_template('index.html')
         else:
-            return render_template('loggedin.html')
+            import basic
+            return render_template('question.html',ques=basic.ques)
     else:
         return 'Please go back and enter the details...'
         

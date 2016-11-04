@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Question Page</title>
+</head>
+<body>
+<ul>
+{% autoescape false %}
+{% for instance in ques: %}<li>{{ instance.questionNo }} {{ instance.description }}</li>{% endfor %}
+{% endautoescape %}
+</ul>
+</body>
+</html>

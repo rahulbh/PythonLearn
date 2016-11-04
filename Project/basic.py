@@ -4,8 +4,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session 
 from sqlalchemy.dialects.mssql.base import TINYINT
 from MySQLdb.constants.FIELD_TYPE import VARCHAR
-from sqlalchemy.sql.schema import PrimaryKeyConstraint
-    
 # Base = declarative_base()
 Base = declarative_base()
 
@@ -60,20 +58,50 @@ Session = scoped_session(sessionmaker(bind=engine))
 dbsession = Session()
     
 dbsession.add_all([qQuestions('DUM101', 'Dummies MCQ', 'Which scientist developed the theory of universal gravitation?', 0, None, None,'hello 802', None,None),
-qQuestions('DUM101', 'Dummies MCQ', 'Which scientist created e=mc<sup>2</sup>?', 0, None,None, 'hello 803',None, None)])
-'''qQuestions(804, 'DUM101', 'Dummies MCQ', None, 'Which scientist explained electromagnetic induction using a concept called the lines of force?', 'hello 804', 0, None, None, None),
-qQuestions(805, 'DUM101', 'Dummies MCQ', None, 'How many planets are there in the solar system?', 'hello 805', 0, None, None, None),
-qQuestions(806, 'DUM101', 'Dummies MCQ', None, 'Which planet is the closet to the Sun?', 'hello 806', 0, None, None, None),
-qQuestions(807, 'DUM101', 'Dummies MCQ', None, 'Which is the largest planet in our solar system?', 'hello 807', 0, None, None, None),
-qQuestions(808, 'DUM101', 'Dummies MCQ', None, 'What is a sun?', 'hello 808', 0, None, None, None)])
-'''
-
+qQuestions('DUM101', 'Dummies MCQ', 'Which scientist created e=mc<sup>2</sup>?', 0, None,None, 'hello 803',None, None),
+qQuestions('DUM101', 'Dummies MCQ', 'Which scientist explained electromagnetic induction using a concept called the lines of force?',0, None,None, 'hello 804', None, None),
+qQuestions('DUM101', 'Dummies MCQ', 'How many planets are there in the solar system?',0, None, None,'hello 805', None, None),
+qQuestions('DUM101', 'Dummies MCQ', 'Which planet is the closet to the Sun?',0, None,None, 'hello 806', None, None),
+qQuestions('DUM101', 'Dummies MCQ', 'Which is the largest planet in our solar system?', 0, None,None,  'hello 807', None, None),
+qQuestions('DUM101', 'Dummies MCQ', 'What is a sun?', 0, None, None,'hello 808',None, None)])
 
 dbsession.commit()
+ques=dbsession.query(qQuestions).all()
 
- 
 for instance in dbsession.query(qQuestions).all():
     print(instance.questionNo, instance.questionGroup, instance.description)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 '''    
 class qAnswersMCMR(Base):
