@@ -55,8 +55,11 @@ def make_QnA():
     
     
     testcases=[{"questionNo":801,"description":"This question does not relate to the image! Suppose that you plucked %%P1%% apples,and Steve took away three. How many apples do you have?"\
-                ,"ques":[['1','0','0','five'],['1','1','0','six']],"ans":[['0','0','10','0'],['0','1','11','0'],['0','2','2','1'],['0','3','13','0'],['0','4','14','0']],"remarks":"Hello 801"}]
-    
+                ,"ques":[['1','0','0','five'],['1','1','0','six']],"ans":[['0','0','10','0'],['0','1','11','0'],['0','2','2','1'],['0','3','13','0'],['0','4','14','0'],['1','0','21','0'],\
+                                                                          ['1','1','22','0'],['1','2','23','0'],['1','3','24','0'],['1','4','All of the Above','0'],['1','5','None of the Above','1']],"remarks":"Hello 801"},\
+               {"questionNo":802,"description":"Which scientist developed the theory of universal gravitation?"\
+                ,"ques":[['0','0','0','0'],['0','0','0','0']],"ans":[['0','0','Issac Newtown','0'],['0','1','Charles Darwin','1'],['0','2','Albert Einstein','0'],['0','3','Michael Faraday','0']],"remarks":"Hello 802"}];
+                
     for t in testcases:
         dbsession.add(QnA(questionNo=t['questionNo'], description=t['description'], remarks=t['remarks'], ques=t['ques'], ans=t['ans']))
     

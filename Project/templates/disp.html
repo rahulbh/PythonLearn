@@ -1,20 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="replace">
 <head>
 	<title>Question Page</title>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
 </head>
 <body>
 <ol>
 {% autoescape false %}
 {% for instance in qQues: %}
 <form action="eval.py" method="post">
-<li>{{ instance.questionNo }} {{ instance.description }}
-
-
+<li><p>	{{ instance.questionNo }} {{ instance.description }}</p>
+	<script type="text/javascript"> 	                      <!-- Replaces %%P1%% with a parameter -->
+	var repString = '{{ instance.ques[0][3] }}';
+    $(document).ready(function() {
+        $("p").text(function(index, text) {
+        return text.replace('%%P1%%',repString);
+        });
+    }); </script>
 {% for choice in instance.ans: %}
+{% if choice[0]=='0' %}
 <input type="checkbox" name="choice" value="{{ choice[2]}}">	
-	{{ choice[2] }}
-
+	{{ choice[2] }} <br>
+	{% endif %}
 </li> 
 </ul>
 {% endfor %}	
@@ -23,5 +30,7 @@
 </ol>
 	<input type="submit" name="submit">
 </form>
+<!-- <script type="text/javascript" src="angular.min.js"></script> -->
+<!-- <script type="text/javascript" src="app.js"></script> -->
 </body>
 </html>
