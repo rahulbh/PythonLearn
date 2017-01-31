@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request
-from insert_login import insert_login
+from QnA import dbsession, qQues
 
 app = Flask(__name__)
 
@@ -15,12 +15,13 @@ def submit():
     option = request.form['option']
     # Validate and send response
     if (user and password and option):
-        flag=insert_login(user,password,option)
+        #flag=insert_login(user,password,option)
+        flag = 1
         if flag==0:
             return render_template('index.html')
         else:
-            import basic
-            return render_template('question.html',ques=basic.ques)
+            import QnA
+            return render_template('question.html',qQues=qQues)
     else:
         return 'Please go back and enter the details...'
         

@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<!-- NGExDataBind.html -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AngularJS Example: Data Binding</title>
+</head>
+<body data-ng-app>
+<input type="text" data-ng-model="yourName" placeholder="Enter your name">
+<p>Hello, <span data-ng-bind="yourName"></span></p>
+<p>Hello again, {{yourName}}</p>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+</body>
+</html>

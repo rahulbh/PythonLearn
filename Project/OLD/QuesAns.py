@@ -1,11 +1,12 @@
-from sqlalchemy.sql.sqltypes import SMALLINT, TEXT, Integer, LargeBinary
-from sqlalchemy import create_engine, Column, String
+from sqlalchemy.sql.sqltypes import SMALLINT, TEXT, Integer, LargeBinary, FLOAT
+from sqlalchemy import create_engine, Column, String, Enum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session 
 from sqlalchemy.dialects.mssql.base import TINYINT
-from sqlalchemy.sql.schema import UniqueConstraint
-
-
+from MySQLdb.constants.FIELD_TYPE import VARCHAR
+from sqlalchemy.sql.schema import UniqueConstraint, PrimaryKeyConstraint,\
+    ForeignKeyConstraint, ForeignKey
+    
 # Base = declarative_base()
 Base = declarative_base()
 
@@ -13,18 +14,17 @@ class qQuestions(Base):
     __tablename__ = 'qQuestions'
     
     questionNo = Column(Integer, primary_key=True, autoincrement=True)
-    courseCode = Column(String(15,collation='utf8_bin'))
-    questionGroup = Column(String(32,collation='utf8_bin'))
-    imgData = Column(String(128,collation='utf9_bin'))
-    description = Column(TEXT(collation='utf8_bin'))
-    remarks = Column (String(2048,collation='utf8_bin'))
-    hasParams = Column(TINYINT)
-    hasCompositeFIB = Column(TINYINT)
-    hasCompositeMCMR = Column(TINYINT)
-    hasCompositeSA = Column(TINYINT)
-
-
-    def __init__(self,courseCode,questionGroup,description,hasParams=0,hasCompositeFIB=None,imgData=None,remarks=None,hasCompositeMCMR=None,hasCompositeSA=None,questionNo=None):
+    courseCode = Column(String(15,collation='utf8_general_ci'))
+    questionGroup = Column(String(32,collation='utf8_general_ci'))
+    imgData = Column(LargeBinary)
+    description = Column(TEXT(collation='utf8_general_ci'))
+    remarks = Column (String(2048,collation='utf8_general_ci'))
+    hasParams = Column(SMALLINT)
+    hasCompositeFIB = Column(SMALLINT)
+    hasCompositeMCMR = Column(SMALLINT)
+    hasCompositeSA = Column(SMALLINT)
+    
+    def __init__(self,courseCode,questionGroup,description,questionNo=None,imgData=None,remarks=None,hasParams=0,hasCompositeFIB=None,hasCompositeMCMR=None,hasCompositeSA=None):
         """Constructor"""
         if questionNo:
             self.questionNo=questionNo
@@ -43,19 +43,67 @@ class qQuestions(Base):
         return "<User(%d, %s)>" % (
         self.questionNo, self.courseCode,self.questionGroup)
         
+class qQuestionImageParams(qQuestions):
+    tablename = 'qQuestionImageParams'
+    paramNo = Column(SMALLINT)
+    posX = Column(FLOAT)
+    posY = Column(FLOAT)
+    
+    def __init__(self,paramNo,posX=None,posY=None):
+        self.paramNo=paramNo
+        self.posX=posX
+        self.posY=posY
+        
+    def __repr__(self):
+        return "<User(%d, %s)>" % (
+        self.questionNo, self.paramNo,self.posX,self.posY)
+        
+class qQuestionSpecs(qQuestions):
+    questionType = Column(Enum('MC','MR','FIB','SA', name='quesType'), nullable = False)
+    maxMarks = Column(SMALLINT)
+    numQuestions = Column(SMALLINT, nullable = False)
+    #remarks = Column(String(2048,collation = 'utf8_general_ci'))
+    
+    def __init__(self,questionType,maxMarks=1,numQuestions=0,remarks=None):
+        self.questionType=questionType
+        self.maxMarks=maxMarks
+        self.numQuestions=numQuestions
+        self.remarks=remarks
+        
+    def __repr__(self):
+        return "<User(%d, %s)>" % (
+        self.courseCode, self.questionGroup,self.questionType,self.maxMarks,self.numQuestions)
+        
+    
+    
 
-
-class qAnswersMCMR(Base):
-    __tablename__ = 'qAnswersMCMR'
-    __table_arg__ = (UniqueConstraint("questionNo", "variationNo","answerNo","choiceNo"))
+class qQuestionParts(qQuestions):
+    tablename = 'qQuestionParts'
+    partNo = Column(SMALLINT, nullable= False)
+    partType = Column(Enum('MC', 'MR', 'FIB', 'SA', name='partType'), nullable= False)
+    partDesc = Column(TEXT(collation='utf8_general_ci'), nullable= False)
+    partMarks = Column(SMALLINT, nullable= False)
+    
+    def __init__(self,partNo,partType,partDesc,partMarks=1):
+        self.partNo=partNo
+        self.partType=partType
+        self.Desc=partDesc
+        self.partMarks=partMarks
+        
+    def __repr__(self):
+        return "<User(%d, %s)>" % (
+        self.questionNo,self.partNo, self.partType,self.Desc,self.partMarks)
+                    
+        
+class qAnswers(Base):
+    __tablename__ = 'qAnswers'
+    __table_arg__ = (UniqueConstraint("questionNo", "variationNo","answerNo"))
     
     questionNo = Column(Integer, autoincrement=True,primary_key=True)
     variationNo = Column(SMALLINT,primary_key=True)
     answerNo = Column(TINYINT,primary_key=True)
-    choiceNo = Column(TINYINT,primary_key=True)
-    choiceValue = Column(String(255))
-    isAnswer = Column(TINYINT)
-    canRandomize = Column(TINYINT)
+    
+    PrimaryKeyConstraint('questionNo','variationNo','answerNo', name='ansPK')
 
 
     def __init__(self,questionNo,variationNo,answerNo,choiceNo,choiceValue,isAnswer=0,canRandomize=1):
@@ -64,7 +112,26 @@ class qAnswersMCMR(Base):
             self.questionNo=questionNo  
         self.variationNo=variationNo
         self.answerNo=answerNo
-        self.choiceNo=choiceNo
+
+    def __repr__(self):
+        """Show this object (database record)"""
+        return "<User(%d, %s)>" % (
+        self.questionNo, self.variationNo,self.answerNo)
+        
+class qAnswersMCMR(qAnswers):
+    __tablename__ = 'qAnswersMCMR'
+    quesNo=Column(Integer, primary_key=True)
+    varNo = Column(SMALLINT, primary_key=True)
+    ansNo = Column(TINYINT, primary_key=True)
+    choiceValue = Column(String(255))
+    isAnswer = Column(TINYINT)
+    canRandomize = Column(TINYINT)
+    
+    ForeignKeyConstraint([quesNo,varNo,ansNo],[qAnswers.questionNo,qAnswers.variationNo,qAnswers.answerNo])
+
+    def __init__(self,choiceValue,isAnswer=0,canRandomize=1):
+        """Constructor"""
+        
         self.choiceValue=choiceValue
         self.isAnswer=isAnswer
         self.canRandomize=canRandomize
@@ -72,8 +139,50 @@ class qAnswersMCMR(Base):
     def __repr__(self):
         """Show this object (database record)"""
         return "<User(%d, %s)>" % (
-        self.questionNo, self.variationNo,self.answerNo,self.choiceNo)
+        self.questionNo, self.variationNo,self.answerNo,self.choiceValue)
+        
+#class qAnswerMC(qAnswersMCMR):   #FUTURE CLASS-SPECIFIC FUNCTIONS
+#class qAnswerMR(qAnswersMCMR):      
+        
+class qAnswersFIB(qAnswers):
+    tablename = 'qAnswersFIB'
+    quesNo=Column(Integer, primary_key=True)
+    varNo = Column(SMALLINT, primary_key=True)
+    ansNo = Column(TINYINT, primary_key=True)
+    answerValue = Column(String(256,collation='utf8_general_ci'))
+    FIBTolerance = Column(SMALLINT)
+    FIBStringCS = Column(TINYINT)
     
+    ForeignKeyConstraint([quesNo,varNo,ansNo],[qAnswers.questionNo,qAnswers.variationNo,qAnswers.answerNo])
+    
+    def __init__(self,answerValue,FIBTolerance=0,FIBStringCS=0):
+        """Constructor"""
+        
+        self.answerValue=answerValue
+        self.FIBTolerance=FIBTolerance
+        self.FIBStringCS=FIBStringCS
+
+    def __repr__(self):
+        """Show this object (database record)"""
+        return "<User(%d, %s)>" % (
+        self.questionNo, self.variationNo,self.answerNo,self.answerValue)
+    
+class qAnswersSA(qAnswers):
+    tablename = 'qAnswersSA'
+    
+    #questionNo=Column(Integer, ForeignKey('qAnswers.questionNo'), primary_key=True)
+    answerKeys = Column(String(512,collation='utf8_general_ci'))
+    
+    def __init__(self,answerKeys=None):
+        """Constructor"""
+        
+        self.answerKeys=answerKeys
+
+    def __repr__(self):
+        """Show this object (database record)"""
+        return "<User(%d, %s)>" % (
+        self.questionNo, self.variationNo,self.answerNo,self.answerKeys)
+        
 # Create a database engine
 engine = create_engine('mysql://testuser:12345678@localhost:3306/testdb')
 engine.echo = True  # Echo output to console for debugging
@@ -83,14 +192,14 @@ Base.metadata.drop_all(engine)
 
 # Create all tables mapped in Base's subclasses
 Base.metadata.create_all(engine)
-
+    
 # Create a database session binded to our engine, which serves as a staging area
 # for changes to the objects. To make persistent changes to database, call
 # commit(); otherwise, call rollback() to abort.
 Session = scoped_session(sessionmaker(bind=engine))
 dbsession = Session()
 
-    
+"""    
 dbsession.add_all([qQuestions('DUM101', 'Dummies MCQ', 'Which scientist developed the theory of universal gravitation?', 0, None, None,'hello 802', None,None,802),
 qQuestions('DUM101', 'Dummies MCQ', 'Which scientist created e=mc<sup>2</sup>?', 0, None,None, 'hello 803',None, None),
 qQuestions('DUM101', 'Dummies MCQ', 'Which scientist explained electromagnetic induction using a concept called the lines of force?',0, None,None, 'hello 804', None, None),
@@ -229,7 +338,7 @@ qAnswersMCMR(851, 1, 5, 0, 'True', False, True),
 qAnswersMCMR(851, 1, 5, 1, 'False', True, True),
 
 qAnswersMCMR(851, 2, 5, 0, 'True', False, True),
-qAnswersMCMR(851, 2, 5, 1, 'False', True, True)])
+qAnswersMCMR(851, 2, 5, 1, 'False', True, True)])"""
 
 dbsession.commit()
 
