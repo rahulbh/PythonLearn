@@ -31,9 +31,7 @@ def make_QnA():
             self.remarks=remarks
             self.ques=ques
             self.ans=ans
-            
-            
-            
+                     
                 
         def __repr__(self):
             """Show this object (database record)"""

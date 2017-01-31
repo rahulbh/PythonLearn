@@ -9,9 +9,15 @@
 {% for instance in qQues: %}
 <form action="eval.py" method="post">
 <li>{{ instance.questionNo }} {{ instance.description }}
-	
+
+
+{% for choice in instance.ans: %}
+<input type="checkbox" name="choice" value="{{ choice[2]}}">	
+	{{ choice[2] }}
+
 </li> 
-</ul>	
+</ul>
+{% endfor %}	
 </li>{% endfor %}
 {% endautoescape %}
 </ol>

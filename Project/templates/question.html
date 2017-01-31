@@ -9,10 +9,7 @@
 {% for instance in qQues: %}
 <form action="eval.py" method="post">
 <li>{{ instance.questionNo }} {{ instance.description }}
-	{{ for choice in instance.ans }}
-	<ul>
-	<li> {{ choice }}</li> 
-	</ul>
+	
 	{% endfor %}
 </li> 
 </ul>	
