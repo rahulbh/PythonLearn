@@ -1,0 +1,12 @@
+1. First you need to download virtualenv on your local computer
+then activate the virtualenv, and install all the packages in requirements.txt in \downloaded_software by using the instructions from following link.
+http://stackoverflow.com/questions/7225900/how-to-pip-install-packages-according-to-requirements-txt-from-a-local-directory
+
+2. Then download eclipse and Then locate your eclipse interpreter of the on the virtualenv environment.
+
+3. Give read and write permission to test.sh
+
+4. Run the insert_title.py file from eclipse.
+
+5. You can find the web app running at 127.0.0.1/
+

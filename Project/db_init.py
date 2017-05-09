@@ -1,88 +1,30 @@
-from sqlalchemy.sql.sqltypes import SMALLINT, TEXT, Integer, LargeBinary, FLOAT
-from sqlalchemy import create_engine, Column, String, Enum
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, scoped_session 
-from sqlalchemy.dialects.mssql.base import TINYINT
-from MySQLdb.constants.FIELD_TYPE import VARCHAR
-from sqlalchemy.sql.schema import UniqueConstraint, PrimaryKeyConstraint,\
-    ForeignKeyConstraint, ForeignKey
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects import postgresql
-import random
-from collections import defaultdict
 
+db=SQLAlchemy()
 
-# Base = declarative_base()
-Base = declarative_base()
-
-class QnA(Base):
+class QnA(db.Model):
     __tablename__ = 'QnA'
     
-    questionNo = Column(Integer, primary_key=True, autoincrement=True)
-    questionGroup = Column(String(64))
-    imgData = Column(String(256))
-    description = Column(TEXT)
-    remarks = Column (String(2048))
-    ques = Column (postgresql.ARRAY(String(64), dimensions = 2))
-    ans = Column (postgresql.ARRAY(String(64), dimensions=2))
+    questionNo = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    questionGroup = db.Column(db.String(64))
+    #imgData = db.Column(db.String(256))
+    description = db.Column(db.TEXT)
+    remarks = db.Column (db.String(2048))
+    ques = db.Column (postgresql.ARRAY(db.String(64), dimensions = 2))
+    ans = db.Column (postgresql.ARRAY(db.String(64), dimensions=2),default=0)
     
-    def __init__(self,questionGroup,description,questionNo=None,imgData=None,remarks=None,ques=[],ans=[]):
-        """Constructor"""
-        if questionNo:
-            self.questionNo=questionNo
-        self.questionGroup=questionGroup 
-        self.imgData=imgData
-        self.description=description
-        self.remarks=remarks
-        self.ques=ques
-        self.ans=ans
-                 
-            
-    def __repr__(self):
-        """Show this object (database record)"""
-        return "<User(%d, %s)>" % (
-        self.questionNo,self.questionGroup, self.description)
-        
-def def_picker():
-    picker={'General Science':2,'Air and Atmosphere':1,'Atoms Molecules Mixtures and Compounds':2}
-    return picker
+def load_db(db):
+    """Create database tables and insert records"""
+    # Drop and re-create all the tables.
+    db.drop_all()
+    db.create_all()
     
-    
-def pick_ques( qQues, picker):
-    select=defaultdict(list)
-    for key in picker:
-        semi_select=[]
-        for choice in dbsession.query(QnA).filter_by(questionGroup=key):
-            semi_select.append(choice)
-        random.shuffle(semi_select)
-        for i in range(picker[key]-1):
-            select[key].append(semi_select[i].questionNo)
-    print select.items()
-        
-                                       
-                                                               
-                
-        
-engine = create_engine('postgresql://testuser:test123@localhost:5432/testdb')
-engine.echo = True  # Echo output to console for debugging
-
-# Drop all tables mapped in Base's subclasses
-Base.metadata.drop_all(engine)
-
-# Create all tables mapped in Base's subclasses
-Base.metadata.create_all(engine)
-
-# Create a database session binded to our engine, which serves as a staging area
-# for changes to the objects. To make persistent changes to database, call
-# commit(); otherwise, call rollback() to abort.
-Session = scoped_session(sessionmaker(bind=engine))
-dbsession = Session()
-
-
-testcases=[{"questionNo":801, "questionGroup":"General Science","description":"This question does not relate to the image! Suppose that you plucked %%P1%% apples,and Steve took away three. How many apples do you have?"\
-            ,"ques":[['1','0','0','five'],['1','1','0','six']],"ans":[['0','0','10','0'],['0','1','11','0'],['0','2','2','1'],['0','3','13','0'],['0','4','14','0'],['1','0','21','0'],\
+    testcases=[{"questionNo":801, "questionGroup":"General Science","description":"This question does not relate to the image! Suppose that you plucked %%P1%% apples,and Steve took away three. How many apples do you have?"\
+            ,"ques":[['1','0','0','text','five'],['1','1','0','text','six']],"ans":[['0','0','10','0'],['0','1','11','0'],['0','2','2','1'],['0','3','13','0'],['0','4','14','0'],['1','0','21','0'],\
                                                                       ['1','1','22','0'],['1','2','23','0'],['1','3','24','0'],['1','4','All of the Above','0'],['1','5','None of the Above','1']],"remarks":"Hello 801"},\
            {"questionNo":802,"questionGroup":"General Science","description":"Which scientist developed the theory of universal gravitation?"\
-            ,"ques":[['0','0','0','0'],['0','0','0','0']],"ans":[['0','0','Issac Newtown','0'],['0','1','Charles Darwin','1'],['0','2','Albert Einstein','0'],['0','3','Michael Faraday','0']],"remarks":"Hello 802"},\
+            ,"ques":[['0','0','0','0','0'],['0','0','0','0','0']],"ans":[['0','0','Issac Newtown','0'],['0','1','Charles Darwin','1'],['0','2','Albert Einstein','0'],['0','3','Michael Faraday','0']],"remarks":"Hello 802"},\
            \
            {"questionNo":803,"questionGroup":"General Science","description":"Which scientist created e=mc<sup>2</sup>??"\
             ,"ques":[['0','0','0','0']],"ans":[['0','0','Issac Newtown','0'],['0','1','Charles Darwin','0'],['0','2','Albert Einstein','1'],['0','3','Michael Faraday','0']],"remarks":"Hello 803"},\
@@ -120,8 +62,7 @@ testcases=[{"questionNo":801, "questionGroup":"General Science","description":"T
             
             
             
-for t in testcases:
-    dbsession.add(QnA(questionNo=t['questionNo'], questionGroup=t['questionGroup'], description=t['description'], remarks=t['remarks'], ques=t['ques'], ans=t['ans']))
-
-dbsession.commit()
-qQues=dbsession.query(QnA).all()    
+    for t in testcases:
+        db.session.add(QnA(questionNo=t['questionNo'], questionGroup=t['questionGroup'], description=t['description'], remarks=t['remarks'], ques=t['ques'], ans=t['ans']))
+        db.session.commit()
+    

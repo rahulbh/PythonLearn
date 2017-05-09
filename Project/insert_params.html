@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html ng-app="add_question">
+<head>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.7/angular-route.min.js"></script>
+<title>{{ title }}</title>
+<meta charset="utf-8">
+ <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+ <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='home.css') }}">
+<script src="{{ url_for('static', filename='contextmenu.js') }}"></script> 
+<link rel="stylesheet" href="{{ url_for('static', filename='contextmenu.css') }}" /> 
+<!--<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='modal.css') }}">-->
+</head>
+<body>
+<div id="wrapper">
+  <header>
+ <img src="/static/ntu_logo.jpg" alt="NTU logo" height="102" width="300" >
+  </header>
+  <div id="leftcolumn">
+  <nav>
+    <ul>
+      <li><a href="students.html">Students</a></li>
+      <br>
+      <li><a href="assessments">Assessments</a></li>
+  </ul>
+  </nav>  
+  </div>
+  <div id="rightcolumn">
+    <div class="content">
+    <div id="main"> 
+    <div ng-view>    
+          
+</div>  
+    </div><br><br><br><br><br><br><br><br></div></div>
+    <footer>
+<br><i> &copy; 2017 NANYANG TECHNOLOGICAL UNIVERSITY</i>  
+   </footer>
+  </div>
+
+<!--<script type="text/javascript" src="{{ url_for('static', filename='modal_load.js') }}"></script>-->
+<script type="text/javascript" src="{{ url_for('static', filename='add_question.js')}}"'></script>
+<script type="text/javascript" src="{{ url_for('static', filename='add_tablerow.js')}}"'></script>
+<script type="text/javascript">
+
+
+    function insertP()
+    {
+   $('#test2').append(' %%P%% ')
+    }
+   
+
+
+</script>
+<script type="text/javascript">
+  $(function() {
+    var clicks = 0;
+    $(".my-link").click(function() {
+        clicks++;
+        $.cookie('stored_clicks', clicks);
+        //alert($.cookie('stored_clicks'));
+    });
+});
+
+  //document.getElementById('param_count').value = $.cookie('stored_clicks');
+
+</script>
+
+</body>
+</html>
+
